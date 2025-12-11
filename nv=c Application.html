@@ -360,20 +360,27 @@
     lastResultCorrect = (diff <= margin);
     
     if (lastResultCorrect && !currentQ.alreadyCounted) {  
-        // Mark as counted so they can't click check 100 times to cheat the counter  
-        currentQ.alreadyCounted = true;   
+      // Mark as counted
+      currentQ.alreadyCounted = true;   
 
-        // Send +1 to the global counter  
-        // Replace 'mysite_physics_correct' with a unique name for your project  
-        fetch('https://api.countapi.xyz/hit/mysite_physics_correct/key')  
-            .then(response => response.json())  
-            .then(data => {  
-                console.log("Global correct answers:", data.value);  
-                // Optional: Update a text element on screen to show the global count  
-                // document.getElementById('globalCounter').innerText = data.value;  
-            });
-    }  
+      // --- NEW WORKING CODE FOR SENDING HIT ---
+      // Must use the SAME namespace and key as Step 2
+      const namespace = 'my_physics_lab_2024'; 
+      const key = 'total_correct';
 
+      fetch(`https://api.counterapi.com/v1/${namespace}/${key}/up`)  
+          .then(response => response.json())  
+          .then(data => {  
+              console.log("Global correct answers:", data.count);  
+              
+              // Optional: Update the text immediately on screen so the user sees it go up
+              const statsDiv = document.getElementById('globalStats');
+              if (statsDiv) {
+                  statsDiv.innerText = "Total Correct Answers Global: " + data.count;
+              }
+          })
+          .catch(err => console.log(err));
+  }  
     renderResult(lastResultCorrect);
   }
 
@@ -433,18 +440,22 @@
   generateQuestion();
   updateUIText();
 
-  // Get the current number without adding 1  
-  // MAKE SURE 'mysite_physics_correct' MATCHES the name you used in the other files!  
-  fetch('https://api.countapi.xyz/get/mysite_physics_correct/key')  
+  const namespace = 'my_physics_lab_2024';   
+  const key = 'total_correct';  
+
+  fetch(`https://api.counterapi.com/v1/${namespace}/${key}/`)  
     .then(res => res.json())  
     .then(data => {  
         const statsDiv = document.getElementById('globalStats');  
         if (statsDiv) {  
-            statsDiv.innerText = "Total Correct Answers Global: " + data.value;  
+            // Note: This API uses 'count' instead of 'value'  
+            statsDiv.innerText = "Total Correct Answers Global: " + data.count;  
         }  
     })  
     .catch(err => {  
         console.log("Counter Error:", err);  
+        const statsDiv = document.getElementById('globalStats');  
+        if (statsDiv) statsDiv.innerText = "Stats unavailable";  
     });  
 
 </script>
