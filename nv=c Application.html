@@ -128,9 +128,47 @@
   .incorrect { color: #dc3545; }
   
   .hint { color: #7f8c8d; font-size: 0.9em; margin-top: 5px; font-style: italic; }
+
+    /* Back Button Styling */
+  .back-btn {
+    position: absolute; /* Fixed position relative to the page */
+    top: 20px;
+    left: 20px;
+    text-decoration: none;
+    font-size: 30px; /* Large, easy to tap size */
+    color: #555;     /* Dark gray to match your theme */
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%; /* Makes it a circle */
+    transition: background-color 0.2s, color 0.2s;
+    z-index: 1000; /* Ensures it sits on top of everything */
+  }
+
+  .back-btn:hover {
+    background-color: #e0e0e0; /* Light gray circle on hover */
+    color: #000;
+  }
+
+  /* Mobile Adjustment: Make sure it doesn't hit the edges too hard on phones */
+  @media (max-width: 600px) {
+    .back-btn {
+      top: 10px;
+      left: 10px;
+      font-size: 24px;
+    }
+  }
+
 </style>
 </head>
 <body>
+
+<!-- Back Button -->
+<a href="index.html" class="back-btn" title="Back to Menu">
+  &#8592; <!-- This is the HTML code for a left arrow -->
+</a>
 
 <!-- Button removed from here -->
 
