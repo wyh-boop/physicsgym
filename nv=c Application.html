@@ -218,13 +218,15 @@
     }
   };
 
-  let currentLang = 'zh';  
+  // Check memory first, default to 'zh' if nothing saved
+  let currentLang = localStorage.getItem('phyLang') || 'zh';
   let currentQ = {}; 
   let isAnswered = false; 
   let lastResultCorrect = false;
 
   function toggleLanguage() {
     currentLang = (currentLang === 'en') ? 'zh' : 'en';
+    localStorage.setItem('phyLang', currentLang); // <--- ADD THIS LINE  
     updateUIText();
     renderQuestionText(); 
     

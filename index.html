@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,13 +16,36 @@
       min-height: 100vh;
     }
 
+    /* Container to hold Title + Button relative to each other */
+    .header-container {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
     h1 {
       color: #2c3e50;
-      margin-bottom: 40px;
-      text-align: center;
-      border-bottom: 2px solid #ddd;
+      margin: 0;
       padding-bottom: 15px;
+      border-bottom: 2px solid #ddd;
     }
+
+    /* Language Button Styling (Matching your tools) */
+    .lang-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 5px 15px;
+      cursor: pointer;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-family: "Times New Roman", "PMingLiU", "Songti TC", serif;
+      font-size: 16px;
+    }
+    .lang-btn:hover { background: #f0f0f0; }
 
     .menu-container {
       display: flex;
@@ -40,17 +63,16 @@
       padding: 30px;
       border-radius: 10px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      text-decoration: none; /* Removes underline from links */
+      text-decoration: none;
       color: #333;
       transition: transform 0.2s, box-shadow 0.2s;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      border-left: 5px solid #3498db; /* Matches your tool theme */
+      border-left: 5px solid #3498db;
     }
 
-    /* Hover Effects */
     .nav-card:hover {
       transform: translateY(-5px);
       box-shadow: 0 10px 15px rgba(0,0,0,0.15);
@@ -73,31 +95,89 @@
       font-size: 40px;
       margin-bottom: 15px;
     }
+
+    /* Mobile adjustment */
+    @media (max-width: 600px) {
+      .lang-btn { position: relative; top: auto; right: auto; margin-bottom: 15px; }
+    }
   </style>
 </head>
 <body>
 
-  <h1>Physics Simulation Tools</h1>
+  <div class="header-container">
+    <button class="lang-btn" id="btnLang" onclick="toggleLanguage()">English</button>
+    <h1 id="uiTitle">物理模擬工具集</h1>
+  </div>
 
   <div class="menu-container">
     
-    <!-- Link 1: Light Speed -->
-    <!-- Ensure the href matches your actual filename -->
+    <!-- Link 1 -->
     <a href="nv=c Application.html" class="nav-card">
       <div class="icon">⚡</div>
-      <h2>Light Speed & n</h2>
-      <p>Calculate Refractive Index (n) based on the speed of light (v), or vice versa.</p>
+      <h2 id="cardTitle1">光速與折射率</h2>
+      <p id="cardDesc1">已知光速(v)求折射率(n)，或已知折射率求光速。</p>
     </a>
 
-    <!-- Link 2: Snell's Law -->
-    <!-- Ensure the href matches your actual filename -->
+    <!-- Link 2 -->
     <a href="Snell's Law Application.html" class="nav-card">
       <div class="icon">📐</div>
-      <h2>Snell's Law</h2>
-      <p>Interactive simulation and practice questions for refraction angles and indices.</p>
+      <h2 id="cardTitle2">斯涅耳定律</h2>
+      <p id="cardDesc2">折射定律的互動模擬與計算練習。</p>
     </a>
 
   </div>
+
+<script>
+  // 1. Language Data Dictionary
+  const textData = {
+    en: {
+      btnLangText: "中文",
+      title: "Physics Tools Hub",
+      cTitle1: "Light Speed & n",
+      cDesc1: "Calculate Refractive Index (n) based on the speed of light (v), or vice versa.",
+      cTitle2: "Snell's Law",
+      cDesc2: "Interactive simulation and practice questions for refraction angles and indices."
+    },
+    zh: {
+      btnLangText: "English",
+      title: "物理模擬工具集",
+      cTitle1: "光速與折射率",
+      cDesc1: "已知光速(v)求折射率(n)，或已知折射率求光速。",
+      cTitle2: "斯涅耳定律",
+      cDesc2: "折射定律的互動模擬與計算練習。"
+    }
+  };
+
+  // 2. Initialize Language from LocalStorage (Memory)
+  // If no memory exists, default to 'zh'
+  let currentLang = localStorage.getItem('phyLang') || 'zh';
+
+  // 3. Apply the language immediately on load
+  updateUIText();
+
+  function toggleLanguage() {
+    // Switch variable
+    currentLang = (currentLang === 'en') ? 'zh' : 'en';
+    
+    // Save to Memory
+    localStorage.setItem('phyLang', currentLang);
+    
+    // Update Screen
+    updateUIText();
+  }
+
+  function updateUIText() {
+    const t = textData[currentLang];
+    document.getElementById('btnLang').innerText = t.btnLangText;
+    document.getElementById('uiTitle').innerText = t.title;
+    
+    document.getElementById('cardTitle1').innerText = t.cTitle1;
+    document.getElementById('cardDesc1').innerText = t.cDesc1;
+    
+    document.getElementById('cardTitle2').innerText = t.cTitle2;
+    document.getElementById('cardDesc2').innerText = t.cDesc2;
+  }
+</script>
 
 </body>
 </html>

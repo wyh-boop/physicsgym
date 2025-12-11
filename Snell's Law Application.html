@@ -171,7 +171,7 @@
   </div>
 
 <script>
-let currentLang = 'zh';  
+let currentLang = localStorage.getItem('phyLang') || 'zh';
 const textData={
   en:{
     title:"Snell's Law",btnLang:"中文",labelAns:"Answer:",btnCheck:"Check Answer",btnNew:"New Question",
@@ -213,6 +213,7 @@ window.addEventListener('DOMContentLoaded',()=> {
 });
 function toggleLanguage(){
   currentLang=currentLang==='en'?'zh':'en';
+  localStorage.setItem('phyLang', currentLang); // <--- ADD THIS LINE 
   updateUILanguage();renderQuestionText();drawDiagram(currentQuestion);
   if(document.getElementById('solution').style.display==='block'){checkAnswer(true);}
 }
