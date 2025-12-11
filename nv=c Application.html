@@ -184,6 +184,12 @@
   <button class="lang-btn" id="btnLang" onclick="toggleLanguage()">中文</button>
 
   <h1 id="uiTitle">Light Speed & Refractive Index</h1>
+
+  <!-- This is where the number will appear -->
+<div id="globalStats" style="text-align:center; color:#555; margin-bottom:20px; font-size:18px;">
+    Loading stats...
+</div>
+
   
   <div class="formula-box">
     <span style="font-size: 1.2em; vertical-align: middle;">
@@ -353,6 +359,21 @@
     isAnswered = true; 
     lastResultCorrect = (diff <= margin);
     
+    if (lastResultCorrect && !currentQ.alreadyCounted) {  
+        // Mark as counted so they can't click check 100 times to cheat the counter  
+        currentQ.alreadyCounted = true;   
+
+        // Send +1 to the global counter  
+        // Replace 'mysite_physics_correct' with a unique name for your project  
+        fetch('https://api.countapi.xyz/hit/mysite_physics_correct/key')  
+            .then(response => response.json())  
+            .then(data => {  
+                console.log("Global correct answers:", data.value);  
+                // Optional: Update a text element on screen to show the global count  
+                // document.getElementById('globalCounter').innerText = data.value;  
+            });
+    }  
+
     renderResult(lastResultCorrect);
   }
 
@@ -411,6 +432,21 @@
   // Initialize
   generateQuestion();
   updateUIText();
+
+  // Get the current number without adding 1  
+  // MAKE SURE 'mysite_physics_correct' MATCHES the name you used in the other files!  
+  fetch('https://api.countapi.xyz/get/mysite_physics_correct/key')  
+    .then(res => res.json())  
+    .then(data => {  
+        const statsDiv = document.getElementById('globalStats');  
+        if (statsDiv) {  
+            statsDiv.innerText = "Total Correct Answers Global: " + data.value;  
+        }  
+    })  
+    .catch(err => {  
+        console.log("Counter Error:", err);  
+    });  
+
 </script>
 
 </body>
