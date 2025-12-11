@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Snell's Law Practice</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body{
+      font-family: "Times New Roman", "PMingLiU", "Songti TC", serif;
+      background:#f4f4f9;
+      min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px;color:#333;
+    }
+    .container{
+      background:#fff;color:#000;padding:35px;border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.3);
+      max-width:750px;width:100%;text-align:center;position:relative;
+      /* Prevent overflow on small screens */
+      box-sizing: border-box; 
+    }
+    
+    .lang-btn{
+      position:absolute;
+      top:20px;
+      right:20px;
+      padding:5px 15px;
+      cursor:pointer;
+      background:#fff;
+      border:1px solid #ccc;
+      border-radius: 4px;
+      font-family: "Times New Roman", "PMingLiU", "Songti TC", serif;
+      font-size: 16px;
+      z-index: 10;
+      }
+
+    .lang-btn:hover{background:#e2e6ea}
+
+    h1{color:#000;margin-bottom:25px;margin-top:5px;font-weight:bold;font-size:32px;border-bottom:2px solid #eee;padding-bottom:15px}
+    
+    /* --- FIXED: Responsive Canvas Container --- */
+    .canvas-container{
+      position:relative;
+      margin: 25px auto;
+      border:4px solid #333;
+      background:#121212;
+      /* Responsive sizing */
+      width: 100%;
+      max-width: 550px;
+      /* Maintain aspect ratio (550/350 = 1.57) */
+      aspect-ratio: 550 / 350;
+      height: auto; 
+      box-shadow:inset 0 0 20px rgba(0,0,0,0.5);
+      border-radius:2px;
+    }
+    canvas{
+      display:block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .formula-box { 
+      background: #e8f4fd;            /* <--- This makes the background Light Blue */
+      padding: 15px;
+      border-left: 5px solid #3498db; /* <--- This makes the Dark Blue vertical line on the left */
+      margin-bottom: 20px;
+      color: #34495e; 
+      font-size: 19px;
+      text-align: center;
+      border-radius:4px;
+    }
+
+
+    .question-box{background:#f1f8ff;border-left:5px solid #0366d6;padding:20px;margin-bottom:25px;text-align:left;font-size:19px;line-height:1.6;border-radius:4px}
+    
+    /* Input group only contains Label and Input now */
+    .input-group{margin:20px 0 15px 0;display:flex;justify-content:center;gap:15px;align-items:center;flex-wrap:wrap}
+    
+    label{font-size:20px;font-weight:bold}
+    input[type="number"]{
+      font-family: "Times New Roman", "PMingLiU", "Songti TC", serif;border-radius:4px;text-align:center;
+    }
+    input[type="number"]:focus{border-color:#0366d6;outline:none}
+    
+    /* New Button Container for Vertical Stacking */
+    .btn-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    button.action-btn{
+      font-family: "Times New Roman", "PMingLiU", "Songti TC", serif;
+      padding:12px 30px;
+      font-size:19px;
+      cursor:pointer;
+      border:none;
+      border-radius:4px;
+      transition:transform .1s,box-shadow .2s;
+      min-width: 200px; /* Uniform width */
+    }
+    button.action-btn:active{transform:scale(.98)}
+    
+    .btn-check{background:#28a745;color:#fff;box-shadow:0 4px 6px rgba(40,167,69,.3)}
+    .btn-check:hover{background:#218838}
+    
+    .btn-new{background:#007bff;color:#fff;box-shadow:0 4px 6px rgba(0,123,255,.3)}
+    .btn-new:hover{background:#0069d9}
+    
+    #result{margin-top:5px; margin-bottom: 20px; font-weight:bold;font-size:20px;min-height:28px}
+    .solution{margin-top:0px;padding:20px;background:#fff8e1;border:1px solid #ffeeba;text-align:center;display:none;font-size:20px;border-radius:6px}
+    
+    .correct{color:#28a745}.incorrect{color:#dc3545}
+    i{font-style:italic}
+    
+    /* Small adjustments for mobile */
+    @media (max-width: 600px) {
+      .container { padding: 15px; }
+      h1 { font-size: 24px; }
+      .question-box { font-size: 16px; padding: 15px; }
+      label { font-size: 18px; }
+      input[type="number"] { width: 90px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="lang-btn" onclick="toggleLanguage()" id="btnLang">中文</button>
+    <h1 id="uiTitle">Snell's Law Practice</h1>
+
+    <div class="formula-box">
+      <span style="font-size: 1.2em; vertical-align: middle;">
+        \[ n_1 \sin(\theta_1) = n_2 \sin(\theta_2) \]  
+      </span>
+      <div style="margin-top:5px;">  
+        <!-- Added Explanations -->  
+        <small id="uiLegN1">\( n_1 = \) Refractive index of medium 1</small>  
+        <br>  
+        <small id="uiLegN2">\( n_2 = \) Refractive index of medium 2</small>  
+        <br>  
+        <small id="uiLegT1">\( \theta_1 = \) Angle of Incidence</small>  
+        <br>  
+        <small id="uiLegT2">\( \theta_2 = \) Angle of Refraction</small>  
+     </div>  
+    </div>
+
+    <div class="question-box" id="questionText">Loading...</div>
+
+    <div class="canvas-container">
+      <!-- Fixed logic: Canvas internal resolution is high (550x350), CSS scales it down -->
+      <canvas id="simCanvas" width="550" height="350"></canvas>
+    </div>
+
+    <!-- 1. Input Section -->
+    <div class="input-group">
+      <label for="userAnswer" id="uiLabelAns">Answer:</label>
+      <input type="number" id="userAnswer" inputmode="decimal">
+      <span id="unitLabel" style="font-size:18px;"></span>
+    </div>
+
+    <!-- 2. Buttons Section (Stacked: Check -> New Question) -->
+    <div class="btn-container">
+      <button class="action-btn btn-check" onclick="checkAnswer()" id="uiBtnCheck">Check Answer</button>
+      <button class="action-btn btn-new" onclick="newQuestion()" id="uiBtnNew">New Question</button>
+    </div>
+
+    <!-- 3. Result & Solution Section (Below buttons) -->
+    <div id="result"></div>
+    <div id="solution" class="solution"></div>
+  </div>
+
+<script>
+let currentLang = 'zh';  
+const textData={
+  en:{
+    title:"Snell's Law",btnLang:"中文",labelAns:"Answer:",btnCheck:"Check Answer",btnNew:"New Question",
+    correct:"Correct!",incorrect:"Incorrect. Answer:",stepTitle:"Solution",stepFormula:"Snell's Law:",stepSub:"Substitute:",stepCalc:"Result:",
+    mediumA:"Medium",mediumB:"Medium",findN1:"Find the refractive index of Medium <i>A</i>",findN2:"Find the refractive index of Medium <i>B</i>",
+    findI:"Find the Angle of Incidence <i>&theta;<sub>1</sub></i>",findR:"Find the Angle of Refraction <i>&theta;<sub>2</sub></i>",
+    qTemplN1:"Light travels from <b>Medium <i>A</i></b> into <b>{m2}</b> (<i>n</i> = {n2}) <br>Angle of Incidence <i>&theta;<sub>1</sub></i> = {t1}° <br>Angle of Refraction <i>&theta;<sub>2</sub></i> = {t2}° <br>{goal}",
+    qTemplN2:"Light travels from <b>{m1}</b> (<i>n</i> = {n1}) into <b>Medium <i>B</i></b> <br>Angle of Incidence <i>&theta;<sub>1</sub></i> = {t1}° <br>Angle of Refraction <i>&theta;<sub>2</sub></i> = {t2}° <br>{goal}",
+    qTemplAng:"Light travels from <b>{m1}</b> (<i>n</i> = {n1}) into <b>{m2}</b> (<i>n</i> = {n2}) <br>{knownAngleLabel} = {val}° <br>{goal}",
+    labelIncAng:"Angle of Incidence <i>&theta;<sub>1</sub></i>",labelRefAng:"Angle of Refraction <i>&theta;<sub>2</sub></i>", labelAngle: "Angle:",           
+    labelIndex: "Refractive Index:", legendN1: "Refractive indices of medium 1", legendN2: "Refractive indices of medium 2", legendT1: "Angle of Incidence", legendT2: "Angle of Refraction"
+  },
+  zh:{
+    title:"斯涅耳定律",btnLang:"English",labelAns:"答案:",btnCheck:"檢查答案",btnNew:"下一題",
+    correct:"正確！",incorrect:"不正確。正確答案約為",stepTitle:"解答過程",stepFormula:"公式:",stepSub:"代入:",stepCalc:"計算結果:",
+    mediumA:"介質",mediumB:"介質",findN1:"求介質 <i>A</i> 的折射率",findN2:"求介質 <i>B</i> 的折射率",
+    findI:"求入射角 <i>&theta;<sub>1</sub></i>",findR:"求折射角 <i>&theta;<sub>2</sub></i>",
+    qTemplN1:"光線由 <b>介質 <i>A</i></b> 射入 <b>{m2}</b> (<i>n</i> = {n2}) <br>入射角 <i>&theta;<sub>1</sub></i> = {t1}° <br>折射角 <i>&theta;<sub>2</sub></i> = {t2}° <br>{goal}",
+    qTemplN2:"光線由 <b>{m1}</b> (<i>n</i> = {n1}) 射入 <b>介質 <i>B</i></b> <br>入射角 <i>&theta;<sub>1</sub></i> = {t1}° <br>折射角 <i>&theta;<sub>2</sub></i> = {t2}° <br>{goal}",
+    qTemplAng:"光線由 <b>{m1}</b> (<i>n</i> = {n1}) 射入 <b>{m2}</b> (<i>n</i> = {n2}) <br>{knownAngleLabel} 為 {val}° <br>{goal}",
+    labelIncAng:"入射角 <i>&theta;<sub>1</sub></i>",labelRefAng:"折射角 <i>&theta;<sub>2</sub></i>",labelAngle: "角度:",            
+    labelIndex: "折射率:", legendN1: "介質1的折射率", legendN2: "介質2的折射率", legendT1: "入射角", legendT2: "折射角"  
+  }
+};
+const mediaList=[
+  {nameEn:"Vacuum",nameZh:"真空",n:1.00},
+  {nameEn:"Air",nameZh:"空氣",n:1.00},
+  {nameEn:"Water",nameZh:"水",n:1.33},
+  {nameEn:"Vegetable Oil",nameZh:"植物油",n:1.47},
+  {nameEn:"Glass",nameZh:"玻璃",n:1.50},
+  {nameEn:"Perspex",nameZh:"有機玻璃",n:1.60},
+  {nameEn:"Diamond",nameZh:"鑽石",n:2.42}
+];
+
+let currentQuestion={},canvas,ctx;
+window.addEventListener('DOMContentLoaded',()=> {
+  canvas=document.getElementById('simCanvas');ctx=canvas.getContext('2d');
+  updateUILanguage();newQuestion();
+});
+function toggleLanguage(){
+  currentLang=currentLang==='en'?'zh':'en';
+  updateUILanguage();renderQuestionText();drawDiagram(currentQuestion);
+  if(document.getElementById('solution').style.display==='block'){checkAnswer(true);}
+}
+function updateUILanguage(){
+  const t = textData[currentLang];
+  document.getElementById('uiTitle').innerText = t.title;
+  document.getElementById('btnLang').innerText = t.btnLang;
+  document.getElementById('uiLabelAns').innerText = t.labelAns;
+  document.getElementById('uiBtnCheck').innerText = t.btnCheck;
+  document.getElementById('uiBtnNew').innerText = t.btnNew;
+  
+  // FIX 1: Use \\( and \\) instead of \$ for inline math
+  document.getElementById('uiLegN1').innerHTML = `\\( n_1 = \\) ${t.legendN1}`;
+  document.getElementById('uiLegN2').innerHTML = `\\( n_2 = \\) ${t.legendN2}`;
+  document.getElementById('uiLegT1').innerHTML = `\\( \\theta_1 = \\) ${t.legendT1}`;  
+  document.getElementById('uiLegT2').innerHTML = `\\( \\theta_2 = \\) ${t.legendT2}`;  
+
+  // FIX 2: Tell MathJax to re-scan the page for the new math
+  if(window.MathJax) {
+    MathJax.typesetPromise();
+  }
+}
+
+function getName(m){return currentLang==='zh'?m.nameZh:m.nameEn;}
+function randomInt(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+function toRad(d){return d*Math.PI/180;}
+function toDeg(r){return r*180/Math.PI;}
+function toSigFigs(num, precision) {
+    return Number(num).toPrecision(precision);
+}
+
+function newQuestion(){
+  document.getElementById('result').innerHTML="";
+  document.getElementById('solution').style.display="none";
+  document.getElementById('userAnswer').value="";
+
+  let m1Idx=randomInt(0,mediaList.length-1);
+  let m2Idx=randomInt(0,mediaList.length-1);
+  while(mediaList[m1Idx].n===mediaList[m2Idx].n) m2Idx=randomInt(0,mediaList.length-1);
+  let m1=mediaList[m1Idx],m2=mediaList[m2Idx];
+
+  let orientation=Math.random()>0.5?'H':'V';     
+  let directionSide=Math.random()>0.5?-1:1;      
+  let angleSign=Math.random()>0.5?1:-1;          
+
+  let maxAngle=80;
+  if(m1.n>m2.n){
+    const ca=toDeg(Math.asin(m2.n/m1.n));
+    maxAngle=Math.floor(ca-5); if(maxAngle<10) maxAngle=10;
+  }
+  let theta1=randomInt(15,maxAngle);
+  let sinT2=(m1.n/m2.n)*Math.sin(toRad(theta1));
+  if(sinT2>1) sinT2=1;
+  let theta2=toDeg(Math.asin(sinT2));
+  let unknownType=randomInt(0,3); 
+
+  currentQuestion={m1Obj:m1,n1:m1.n,theta1:theta1,m2Obj:m2,n2:m2.n,theta2:theta2,
+    unknownType,orientation,directionSide,angleSign};
+
+  renderQuestionText();drawDiagram(currentQuestion);
+}
+
+function renderQuestionText(){
+  const q=currentQuestion,t=textData[currentLang];
+  let qHtml="";
+  
+  let labelText = "";
+  if(q.unknownType===1 || q.unknownType===3){
+     labelText = t.labelAngle; 
+  } else {
+     labelText = t.labelIndex;
+  }
+  document.getElementById('uiLabelAns').innerText = labelText;
+  document.getElementById('unitLabel').innerText = ""; 
+
+  if(q.unknownType===0) q.correctAnswer=q.n1;
+  else if(q.unknownType===1) q.correctAnswer=q.theta1;
+  else if(q.unknownType===2) q.correctAnswer=q.n2;
+  else q.correctAnswer=q.theta2;
+
+  const m1Name=getName(q.m1Obj),m2Name=getName(q.m2Obj);
+  if(q.unknownType===0){
+    qHtml=t.qTemplN1.replace('{m2}',m2Name).replace('{n2}',q.n2)
+      .replace('{t1}',q.theta1.toFixed(1)).replace('{t2}',q.theta2.toFixed(1)).replace('{goal}',t.findN1);
+  }else if(q.unknownType===2){
+    qHtml=t.qTemplN2.replace('{m1}',m1Name).replace('{n1}',q.n1)
+      .replace('{t1}',q.theta1.toFixed(1)).replace('{t2}',q.theta2.toFixed(1)).replace('{goal}',t.findN2);
+  }else if(q.unknownType===1){
+    qHtml=t.qTemplAng.replace('{m1}',m1Name).replace('{n1}',q.n1).replace('{m2}',m2Name).replace('{n2}',q.n2)
+      .replace('{knownAngleLabel}',t.labelRefAng).replace('{val}',q.theta2.toFixed(1)).replace('{goal}',t.findI);
+  }else{
+    qHtml=t.qTemplAng.replace('{m1}',m1Name).replace('{n1}',q.n1).replace('{m2}',m2Name).replace('{n2}',q.n2)
+      .replace('{knownAngleLabel}',t.labelIncAng).replace('{val}',q.theta1.toFixed(1)).replace('{goal}',t.findR);
+  }
+  document.getElementById('questionText').innerHTML=qHtml;
+}
+
+function vec(x,y){return {x,y}}
+function add(a,b){return {x:a.x+b.x,y:a.y+b.y}}
+function sub(a,b){return {x:a.x-b.x,y:a.y-b.y}}
+function mul(a,k){return {x:a.x*k,y:a.y*k}}
+function angleOf(v){return Math.atan2(v.y,v.x)}
+
+function drawDiagram(q){
+  const bg="#121212",normalCol="#777",ifaceCol="#fff";
+  ctx.fillStyle=bg;ctx.fillRect(0,0,canvas.width,canvas.height);
+  const cx=canvas.width/2,cy=canvas.height/2,len=170;
+
+  let n1,t;
+  if(q.orientation==='H'){
+    n1 = (q.directionSide===-1) ? vec(0,-1) : vec(0,1);              
+    t  = (q.angleSign===1) ? vec(1,0) : vec(-1,0);                   
+    ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(canvas.width,cy);ctx.lineWidth=2;ctx.strokeStyle=ifaceCol;ctx.stroke();
+    ctx.beginPath();ctx.setLineDash([6,4]);ctx.moveTo(cx,30);ctx.lineTo(cx,canvas.height-30);ctx.lineWidth=1;ctx.strokeStyle=normalCol;ctx.stroke();ctx.setLineDash([]);
+  }else{
+    n1 = (q.directionSide===-1) ? vec(-1,0) : vec(1,0);              
+    t  = (q.angleSign===1) ? vec(0,1) : vec(0,-1);                   
+    ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,canvas.height);ctx.lineWidth=2;ctx.strokeStyle=ifaceCol;ctx.stroke();
+    ctx.beginPath();ctx.setLineDash([6,4]);ctx.moveTo(0,cy);ctx.lineTo(canvas.width,cy);ctx.lineWidth=1;ctx.strokeStyle=normalCol;ctx.stroke();ctx.setLineDash([]);
+  }
+  const n2 = vec(-n1.x,-n1.y);
+
+  const c1=Math.cos(toRad(q.theta1)), s1=Math.sin(toRad(q.theta1));
+  const c2=Math.cos(toRad(q.theta2)), s2=Math.sin(toRad(q.theta2));
+
+  const v1_to_if = add(mul(n1,-c1), mul(t, s1));
+  const v2 = add(mul(n2, c2), mul(t, s2));
+
+  const C = vec(cx,cy);
+  const P_inc_remote = sub(C, mul(v1_to_if, len)); 
+  const P_ref_remote = add(C, mul(v2,       len)); 
+
+  drawRayWithArrow(P_inc_remote.x,P_inc_remote.y, cx,cy);
+  drawRayWithArrow(cx,cy, P_ref_remote.x,P_ref_remote.y);
+
+  const v1_back = mul(v1_to_if,-1); 
+  const normalAng1 = angleOf(n1);
+  const rayAng1    = angleOf(v1_back);
+  const normalAng2 = angleOf(n2);
+  const rayAng2    = angleOf(v2);
+
+  const txt1 = (q.unknownType===1) ? "?" : `${q.theta1.toFixed(1)}°`;
+  const txt2 = (q.unknownType===3) ? "?" : `${q.theta2.toFixed(1)}°`;
+  
+  drawAngleArc(cx,cy,60,normalAng1,rayAng1,txt1);
+  drawAngleArc(cx,cy,60,normalAng2,rayAng2,txt2);
+
+  drawLabelsBoxed(q, P_inc_remote, P_ref_remote);
+}
+
+function drawRayWithArrow(x1,y1,x2,y2){
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.lineWidth=3;ctx.strokeStyle="#ff5540";ctx.stroke();
+  const angle=Math.atan2(y2-y1,x2-x1),midX=(x1+x2)/2,midY=(y1+y2)/2,head=18;
+  ctx.beginPath();
+  ctx.moveTo(midX,midY);
+  ctx.lineTo(midX - head*Math.cos(angle - Math.PI/6), midY - head*Math.sin(angle - Math.PI/6));
+  ctx.lineTo(midX - head*Math.cos(angle + Math.PI/6), midY - head*Math.sin(angle + Math.PI/6));
+  ctx.closePath();ctx.fillStyle="#ff5540";ctx.fill();
+}
+
+function drawAngleArc(cx,cy,r,normalAngle,rayAngle,text){
+  function norm(a){while(a<=-Math.PI)a+=2*Math.PI;while(a>Math.PI)a-=2*Math.PI;return a;}
+  let phi = norm(rayAngle - normalAngle);
+  
+  if (Math.abs(phi) > Math.PI/2){
+    const s = phi>0?1:-1;
+    phi = s*(Math.PI - Math.abs(phi));
+  }
+  const anticlockwise = (phi<0);
+
+  ctx.save();
+  ctx.translate(cx,cy);
+  ctx.rotate(normalAngle);
+  ctx.beginPath();
+  ctx.arc(0,0,r,0,phi,anticlockwise);
+  ctx.strokeStyle="#ff7e79";ctx.lineWidth=2;ctx.stroke();
+  ctx.restore(); 
+
+  const globalMidAngle = normalAngle + phi/2;
+  const offset = 45;
+  const tx = cx + Math.cos(globalMidAngle)*(r+offset);
+  const ty = cy + Math.sin(globalMidAngle)*(r+offset);
+
+  ctx.textAlign="center";ctx.textBaseline="middle";ctx.font="bold 20px 'Times New Roman', serif";
+  ctx.lineWidth=5;ctx.strokeStyle="#121212";ctx.lineJoin="round";
+  ctx.strokeText(text,tx,ty);
+  ctx.fillStyle="#ff7e79";
+  ctx.fillText(text,tx,ty);
+}
+
+function drawLabelsBoxed(q, P_inc_remote, P_ref_remote){
+  const t=textData[currentLang],cx=canvas.width/2,cy=canvas.height/2;
+  const margin=24, blockW=180, blockH=60;
+
+  const leftBox  ={x: margin, yTop: margin, yBot: canvas.height - margin - blockH};
+  const rightBox ={x: canvas.width - margin - blockW, yTop: margin, yBot: canvas.height - margin - blockH};
+  const topBox   ={y: margin, xLeft: margin, xRight: canvas.width - margin - blockW};
+  const botBox   ={y: canvas.height - margin - blockH, xLeft: margin, xRight: canvas.width - margin - blockW};
+
+  let m1Pos={x:0,y:0},m2Pos={x:0,y:0};
+
+  const incTop = (P_inc_remote.y < cy);
+  const incLeft= (P_inc_remote.x < cx);
+  const refTop = (P_ref_remote.y < cy);
+  const refLeft= (P_ref_remote.x < cx);
+
+  if(q.orientation==='V'){
+    if(q.directionSide===-1){ 
+      m1Pos.x=leftBox.x;  m1Pos.y= incTop ? leftBox.yBot  : leftBox.yTop;
+      m2Pos.x=rightBox.x; m2Pos.y= refTop ? rightBox.yBot : rightBox.yTop;
+    }else{ 
+      m1Pos.x=rightBox.x; m1Pos.y= incTop ? rightBox.yBot : rightBox.yTop;
+      m2Pos.x=leftBox.x;  m2Pos.y= refTop ? leftBox.yBot  : leftBox.yTop;
+    }
+  }else{
+    if(q.directionSide===-1){ 
+      m1Pos.y=topBox.y;  m1Pos.x= incLeft ? topBox.xRight : topBox.xLeft;
+      m2Pos.y=botBox.y;  m2Pos.x= refLeft ? botBox.xRight : botBox.xLeft;
+    }else{ 
+      m1Pos.y=botBox.y;  m1Pos.x= incLeft ? botBox.xRight : botBox.xLeft;
+      m2Pos.y=topBox.y;  m2Pos.x= refLeft ? topBox.xRight : topBox.xLeft;
+    }
+  }
+
+  function drawTextLines(x,y,lines){
+    let yy=y;
+    lines.forEach(line=>{
+      let xx=x;
+      ctx.fillStyle="#ffffff";ctx.textAlign="left";ctx.textBaseline="middle";
+      ctx.lineWidth=4;ctx.strokeStyle="#121212";ctx.lineJoin="round";
+      line.forEach(part=>{
+        ctx.font = part.italic ? "italic 24px 'Times New Roman', serif" : "24px 'Times New Roman', serif";
+        ctx.strokeText(part.text,xx,yy);
+        ctx.fillText(part.text,xx,yy);
+        xx += ctx.measureText(part.text).width;
+      });
+      yy += 30;
+    });
+  }
+
+  let m1Name=getName(q.m1Obj),m2Name=getName(q.m2Obj);
+  let m1Lines = (q.unknownType===0)
+    ? [[{text:t.mediumA+" ",italic:false},{text:"A",italic:true}],
+       [{text:"n",italic:true},{text:" = ?",italic:false}]]
+    : [[{text:m1Name,italic:false}],
+       [{text:"n",italic:true},{text:" = "+q.n1.toFixed(2),italic:false}]];
+  let m2Lines = (q.unknownType===2)
+    ? [[{text:t.mediumB+" ",italic:false},{text:"B",italic:true}],
+       [{text:"n",italic:true},{text:" = ?",italic:false}]]
+    : [[{text:m2Name,italic:false}],
+       [{text:"n",italic:true},{text:" = "+q.n2.toFixed(2),italic:false}]];
+
+  drawTextLines(m1Pos.x,m1Pos.y,m1Lines);
+  drawTextLines(m2Pos.x,m2Pos.y,m2Lines);
+}
+
+function checkAnswer(refreshOnly=false){
+  const t=textData[currentLang];
+  const q=currentQuestion;
+  const v=parseFloat(document.getElementById('userAnswer').value);
+  const resultDiv=document.getElementById('result');
+  const solDiv=document.getElementById('solution');
+
+  if(refreshOnly && isNaN(v)) return;
+  if(!refreshOnly && isNaN(v)){ alert("Please enter a number."); return; }
+
+  const isCorrect = Math.abs(v - q.correctAnswer) < 0.2;
+  const isAngle = (q.unknownType % 2 !== 0);
+  const ansStr = toSigFigs(q.correctAnswer, 3) + (isAngle ? "°" : "");
+
+  resultDiv.innerHTML = isCorrect ? `<span class='correct'>${t.correct}</span>`
+      : `<span class='incorrect'>${t.incorrect} ${ansStr}.</span>`;
+
+  let steps=`<div style="margin-bottom:10px;"><strong>${t.stepTitle}</strong></div>`;
+  
+  let d_n1 = q.unknownType===0 ? "?" : q.n1;
+  let d_t1 = q.unknownType===1 ? "?" : q.theta1.toFixed(1)+"^\\circ";
+  let d_n2 = q.unknownType===2 ? "?" : q.n2;
+  let d_t2 = q.unknownType===3 ? "?" : q.theta2.toFixed(1)+"^\\circ";
+
+  steps += `\\[ \\begin{align*} 
+  & n_1 = ${d_n1}, && \\quad \\theta_1 = ${d_t1} \\\\
+  & n_2 = ${d_n2}, && \\quad \\theta_2 = ${d_t2}
+  \\end{align*} \\]`;
+
+  steps += `\\[ n_1 \\sin(\\theta_1) = n_2 \\sin(\\theta_2) \\]`;
+
+  let val_n1 = q.unknownType===0 ? "n_1" : q.n1;
+  let val_t1 = q.unknownType===1 ? "\\theta_1" : q.theta1.toFixed(1)+"^\\circ";
+  let val_n2 = q.unknownType===2 ? "n_2" : q.n2;
+  let val_t2 = q.unknownType===3 ? "\\theta_2" : q.theta2.toFixed(1)+"^\\circ";
+
+  let termLHS = `${val_n1} \\cdot \\sin(${val_t1})`;
+  let termRHS = `${val_n2} \\cdot \\sin(${val_t2})`;
+
+  steps += `\\[ \\begin{align*} `;
+  steps += `${termLHS} &= ${termRHS} \\\\ `;
+
+  if(q.unknownType===0){
+    steps += `n_1 &= \\frac{${q.n2} \\cdot \\sin(${val_t2})}{\\sin(${val_t1})} \\\\ `;
+    steps += `n_1 &= \\mathbf{${toSigFigs(q.correctAnswer, 3)}}`;
+  } else if(q.unknownType===2){
+    steps += `n_2 &= \\frac{${q.n1} \\cdot \\sin(${val_t1})}{\\sin(${val_t2})} \\\\ `;
+    steps += `n_2 &= \\mathbf{${toSigFigs(q.correctAnswer, 3)}}`;
+  } else if(q.unknownType===1){
+    steps += `\\sin(\\theta_1) &= \\frac{${q.n2} \\cdot \\sin(${val_t2})}{${q.n1}} \\\\ `;
+    steps += `\\theta_1 &= \\sin^{-1} \\left( \\frac{${q.n2} \\cdot \\sin(${val_t2})}{${q.n1}} \\right) \\\\ `;
+    steps += `\\theta_1 &= \\mathbf{${toSigFigs(q.correctAnswer, 3)}^\\circ}`;
+  } else {
+    steps += `\\sin(\\theta_2) &= \\frac{${q.n1} \\cdot \\sin(${val_t1})}{${q.n2}} \\\\ `;
+    steps += `\\theta_2 &= \\sin^{-1} \\left( \\frac{${q.n1} \\cdot \\sin(${val_t1})}{${q.n2}} \\right) \\\\ `;
+    steps += `\\theta_2 &= \\mathbf{${toSigFigs(q.correctAnswer, 3)}^\\circ}`;
+  }
+
+  steps += `\\end{align*} \\]`;
+
+  solDiv.innerHTML=steps;solDiv.style.display="block";
+  if(window.MathJax) MathJax.typesetPromise([solDiv]).catch(()=>{});
+}
+</script>
+</body>
+</html>
