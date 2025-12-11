@@ -1,139 +1,18 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Light Speed & Refractive Index</title>
 
-<!-- Import MathJax for LaTeX formulas -->
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+.hint { color: #7f8c8d; font-size: 0.9em; margin-top: 5px; font-style: italic; }
 
-<style>
-  body { 
-    font-family: "Times New Roman", "PMingLiU", "Songti TC", serif;
-    max-width: 600px; 
-    margin: 40px auto; 
-    padding: 20px; 
-    line-height: 1.6; 
-    background-color: #f4f4f9; 
-    /* removed position: relative from body as we don't need it there anymore */
-  }
-
-  .card { 
-    background: white; 
-    padding: 30px; 
-    border-radius: 10px; 
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
-    margin-top: 40px; 
-    text-align: center;
-    
-    /* --- CRITICAL CHANGE 1: Enable positioning inside the card --- */
-    position: relative; 
-  }
-
-  /* --- CRITICAL CHANGE 2: Update button position --- */
-  .lang-btn { 
-    position: absolute; 
-    top: 15px;    /* Adjust distance from top of white card */
-    right: 15px;  /* Adjust distance from right of white card */
-    padding: 5px 15px; 
-    cursor: pointer; 
-    background: #fff; 
-    border: 1px solid #ccc; 
-    border-radius: 4px; 
-    font-family: "Times New Roman", "PMingLiU", "Songti TC", serif;
-    font-size: 16px;
-    z-index: 10;
-  }
-  .lang-btn:hover { background: #f0f0f0; }
-
-  h2 { color: #2c3e50; margin-top: 0; }
-  
-  /* Make sure Title doesn't overlap the button on small screens */
-  #uiTitle {
-    margin-top: 10px; 
-  }
-
-  .formula-box { 
-    background: #e8f4fd; 
-    padding: 15px; 
-    border-left: 5px solid #3498db; 
-    margin-bottom: 20px; 
-    color: #34495e; 
-    font-size: 19px;
-    text-align: center;
-    border-radius:4px;
-  }
-
-  .question-box { 
-    background: #f1f8ff;            
-    border-left: 5px solid #0366d6; 
-    padding: 20px;
-    margin-bottom: 25px;
-    text-align: left;               
-    font-size: 19px;
-    line-height: 1.6;
-    border-radius: 4px;
-  }
-  
-  .input-group { 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    gap: 10px; 
-    margin-bottom: 10px; 
-  }
-  
-  input[type="text"] { 
-    padding: 10px; 
-    width: 120px; 
-    font-size: 18px; 
-    font-family: "Times New Roman", "PMingLiU", "Songti TC", serif;
-    border: 2px solid #ddd; 
-    border-radius: 5px; 
-    text-align: center; 
-  }
-  
-  .btn-container { 
-    margin-top: 10px;
-    display: flex; 
-    flex-direction: column; 
-    align-items: center;    
-    gap: 15px;              
-    margin-bottom: 25px;
-  }
-  
-  button.action-btn { 
-    padding: 12px 30px; 
-    font-size: 19px; 
-    cursor: pointer; 
-    border: none; 
-    border-radius: 4px; 
-    transition: 0.3s; 
-    font-family: "Times New Roman", "PMingLiU", "Songti TC", serif;
-    min-width: 200px;
-  }
-
-  .btn-check{background:#28a745;color:#fff;box-shadow:0 4px 6px rgba(40,167,69,.3)}
-  .btn-check:hover{background:#218838}
-  
-  .btn-new{background:#007bff;color:#fff;box-shadow:0 4px 6px rgba(0,123,255,.3)}
-  .btn-new:hover{background:#0069d9}
-  
-  #result {margin-top:5px; margin-bottom: 20px; font-weight:bold;font-size:20px;min-height:28px}
-  .solution{margin-top:0px;padding:20px;background:#fff8e1;border:1px solid #ffeeba;text-align:center;display:none;font-size:20px;border-radius:6px}
-  
-  .correct { color: #28a745; }
-  .incorrect { color: #dc3545; }
-  
-  .hint { color: #7f8c8d; font-size: 0.9em; margin-top: 5px; font-style: italic; }
-
+    /* Back Button Styling */
   /* Back Button Fixed to Screen */
-  .back-btn {
+.back-btn {
+    position: absolute; /* Fixed position relative to the page */
     position: fixed; /* 'fixed' ensures it stays in the corner even if you scroll */
-    top: 20px;
-    left: 20px;
+top: 20px;
+left: 20px;
+    text-decoration: none;
+    font-size: 30px; /* Large, easy to tap size */
+    color: #555;     /* Dark gray to match your theme */
+    width: 40px;
+    height: 40px;
     
     /* Make it look like a distinct button */
     background-color: #34495e; /* Dark Blue-Grey background */
@@ -144,273 +23,284 @@
     border-radius: 50%;         /* Circle shape */
     
     /* Centering the arrow inside the circle */
-    display: flex;
-    align-items: center;
-    justify-content: center;
+display: flex;
+align-items: center;
+justify-content: center;
+    border-radius: 50%; /* Makes it a circle */
+    transition: background-color 0.2s, color 0.2s;
+    z-index: 1000; /* Ensures it sits on top of everything */
     
     text-decoration: none;
     font-size: 24px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* Adds a shadow so it floats above the page */
     z-index: 9999; /* Ensures it sits ON TOP of all other cards */
     transition: background-color 0.2s;
-  }
+}
 
-  .back-btn:hover {
+.back-btn:hover {
+    background-color: #e0e0e0; /* Light gray circle on hover */
+    color: #000;
     background-color: #2c3e50; /* Slightly darker when you hover */
     transform: scale(1.1);     /* Grows slightly when hovered */
-  }
+}
 
+  /* Mobile Adjustment: Make sure it doesn't hit the edges too hard on phones */
   /* Mobile adjustment */
-  @media (max-width: 600px) {
-    .back-btn {
-      top: 10px;
-      left: 10px;
+@media (max-width: 600px) {
+.back-btn {
+top: 10px;
+left: 10px;
+      font-size: 24px;
       width: 35px;
       height: 35px;
       font-size: 20px;
-    }
-  }
+}
+}
 
 </style>
 </head>
 <body>
 
+<!-- Back Button -->
+<a href="index.html" class="back-btn" title="Back to Menu">
+  &#8592; <!-- This is the HTML code for a left arrow -->
+</a>
 <a href="index.html" class="back-btn" title="Back to Menu">&#8592;</a>
 
 <!-- Button removed from here -->
 
 <div class="card">
-  <!-- CHANGE 3: Button moved INSIDE the card -->
-  <button class="lang-btn" id="btnLang" onclick="toggleLanguage()">中文</button>
+<!-- CHANGE 3: Button moved INSIDE the card -->
+<button class="lang-btn" id="btnLang" onclick="toggleLanguage()">中文</button>
 
-  <h1 id="uiTitle">Light Speed & Refractive Index</h1>
-  
-  <div class="formula-box">
-    <span style="font-size: 1.2em; vertical-align: middle;">
-      \[ n = \frac{c}{v} \]
-    </span>
-    <div style="margin-top:5px;">
-       <small id="uiN">\( n = \) Medium's refractive index</small>
-      <br>  
-      <small id="uiConstant">\( c = 3 \times 10^8 \text{ m/s} \) Speed of light in vacuum</small>
-      <br>  
-      <small id="uiV">\( v = \) Speed of light in medium</small>  
-    </div>
-  </div>
+<h1 id="uiTitle">Light Speed & Refractive Index</h1>
 
-  <div id="questionArea" class="question-box">Loading...</div>
+<div class="formula-box">
+<span style="font-size: 1.2em; vertical-align: middle;">
+\[ n = \frac{c}{v} \]
+</span>
+<div style="margin-top:5px;">
+<small id="uiN">\( n = \) Medium's refractive index</small>
+<br>  
+<small id="uiConstant">\( c = 3 \times 10^8 \text{ m/s} \) Speed of light in vacuum</small>
+<br>  
+<small id="uiV">\( v = \) Speed of light in medium</small>  
+</div>
+</div>
 
-  <div class="input-group">
-    <span id="uiLabelAns" style="font-weight:bold; font-size: 1.1em;">Answer:</span>
-    <input type="text" id="userAns" inputmode="decimal" placeholder="">
-    <span id="unitLabel" style="font-size: 1.1em;"></span>
-  </div>
-  
-  <div class="hint" id="uiHint"></div>
+<div id="questionArea" class="question-box">Loading...</div>
 
-  <div class="btn-container">
-    <button class="action-btn btn-check" id="btnCheck" onclick="checkAnswer()">Check Answer</button>
-    <button class="action-btn btn-new" id="btnNew" onclick="generateQuestion()">New Question</button>
-  </div>
+<div class="input-group">
+<span id="uiLabelAns" style="font-weight:bold; font-size: 1.1em;">Answer:</span>
+<input type="text" id="userAns" inputmode="decimal" placeholder="">
+<span id="unitLabel" style="font-size: 1.1em;"></span>
+</div>
 
-  <div id="result"></div>
-  <div id="solutionContainer" class="solution"></div>  
+<div class="hint" id="uiHint"></div>
+
+<div class="btn-container">
+<button class="action-btn btn-check" id="btnCheck" onclick="checkAnswer()">Check Answer</button>
+<button class="action-btn btn-new" id="btnNew" onclick="generateQuestion()">New Question</button>
+</div>
+
+<div id="result"></div>
+<div id="solutionContainer" class="solution"></div>  
 </div>
 
 <script>
-  // -- Helper to remove trailing zeros --
-  function formatNum(num) {
-    return parseFloat(num.toFixed(2));
-  }
+// -- Helper to remove trailing zeros --
+function formatNum(num) {
+return parseFloat(num.toFixed(2));
+}
 
-  // -- Language Data --
-  const textData = {
-    en: {
-      btnLangText: "中文", 
-      title: "Light Speed & Refractive Index",
-      constantDesc: "Speed of light in vacuum", 
-      constantDesn: "Medium's refractive index",
-      constantDesv: "Speed of light in medium",
-      labelAns: "Answer:",
-      hint: "Note: For scientific notation like 1.5 × 10<sup>8</sup>, just enter <b>1.5</b>.",
-      btnCheck: "Check Answer",
-      btnNew: "New Question",
-      correct: "Correct!",
-      incorrect: "Incorrect.",
-      solution: "Solution",
-      exactAns: "The exact answer was",
-      unitSpeed: "× 10<sup>8</sup> m/s",
-      qFindN: "Light travels in a medium at a speed of <b>{v} × 10<sup>8</sup> m/s</b>.<br>Calculate the refractive index (<i>n</i>) of this medium.",
-      qFindV: "A medium has a refractive index of <b><i>n</i> = {n}</b>.<br>Calculate the speed of light (<i>v</i>) in this medium."
-    },
-    zh: {
-      btnLangText: "English",
-      title: "光速與折射率",
-      constantDesc: "光在真空中的速率",
-      constantDesn: "介質的折射率",
-      constantDesv: "光在介質中的速率",
-      labelAns: "答案:",
-      hint: "注意：如果答案是 1.5 × 10<sup>8</sup>，只需輸入 <b>1.5</b>。",
-      btnCheck: "檢查答案",
-      btnNew: "下一題",
-      correct: "正確！",
-      incorrect: "不正確。",
-      solution: "解答過程",
-      exactAns: "準確答案是",
-      unitSpeed: "× 10<sup>8</sup> m/s",
-      qFindN: "光在某介質中的速率為 <b>{v} × 10<sup>8</sup> m/s</b>。<br>求該介質的折射率 (<i>n</i>)。",
-      qFindV: "某介質的折射率為 <b><i>n</i> = {n}</b>。<br>求光在該介質中的速率 (<i>v</i>)。"
-    }
-  };
+// -- Language Data --
+const textData = {
+en: {
+btnLangText: "中文", 
+title: "Light Speed & Refractive Index",
+constantDesc: "Speed of light in vacuum", 
+constantDesn: "Medium's refractive index",
+constantDesv: "Speed of light in medium",
+labelAns: "Answer:",
+hint: "Note: For scientific notation like 1.5 × 10<sup>8</sup>, just enter <b>1.5</b>.",
+btnCheck: "Check Answer",
+btnNew: "New Question",
+correct: "Correct!",
+incorrect: "Incorrect.",
+solution: "Solution",
+exactAns: "The exact answer was",
+unitSpeed: "× 10<sup>8</sup> m/s",
+qFindN: "Light travels in a medium at a speed of <b>{v} × 10<sup>8</sup> m/s</b>.<br>Calculate the refractive index (<i>n</i>) of this medium.",
+qFindV: "A medium has a refractive index of <b><i>n</i> = {n}</b>.<br>Calculate the speed of light (<i>v</i>) in this medium."
+},
+zh: {
+btnLangText: "English",
+title: "光速與折射率",
+constantDesc: "光在真空中的速率",
+constantDesn: "介質的折射率",
+constantDesv: "光在介質中的速率",
+labelAns: "答案:",
+hint: "注意：如果答案是 1.5 × 10<sup>8</sup>，只需輸入 <b>1.5</b>。",
+btnCheck: "檢查答案",
+btnNew: "下一題",
+correct: "正確！",
+incorrect: "不正確。",
+solution: "解答過程",
+exactAns: "準確答案是",
+unitSpeed: "× 10<sup>8</sup> m/s",
+qFindN: "光在某介質中的速率為 <b>{v} × 10<sup>8</sup> m/s</b>。<br>求該介質的折射率 (<i>n</i>)。",
+qFindV: "某介質的折射率為 <b><i>n</i> = {n}</b>。<br>求光在該介質中的速率 (<i>v</i>)。"
+}
+};
 
-  // Check memory first, default to 'zh' if nothing saved
-  let currentLang = localStorage.getItem('phyLang') || 'zh';
-  let currentQ = {}; 
-  let isAnswered = false; 
-  let lastResultCorrect = false;
+// Check memory first, default to 'zh' if nothing saved
+let currentLang = localStorage.getItem('phyLang') || 'zh';
+let currentQ = {}; 
+let isAnswered = false; 
+let lastResultCorrect = false;
 
-  function toggleLanguage() {
-    currentLang = (currentLang === 'en') ? 'zh' : 'en';
-    localStorage.setItem('phyLang', currentLang); // <--- ADD THIS LINE  
-    updateUIText();
-    renderQuestionText(); 
-    
-    if (isAnswered) {
-      renderResult(lastResultCorrect);
-    }
+function toggleLanguage() {
+currentLang = (currentLang === 'en') ? 'zh' : 'en';
+localStorage.setItem('phyLang', currentLang); // <--- ADD THIS LINE  
+updateUIText();
+renderQuestionText(); 
 
-    if (window.MathJax) {
-      MathJax.typesetPromise();
-    }
-  }
+if (isAnswered) {
+renderResult(lastResultCorrect);
+}
 
-  function updateUIText() {
-    const t = textData[currentLang];
-    document.getElementById('btnLang').innerText = t.btnLangText;
-    document.getElementById('uiTitle').innerText = t.title;
-    document.getElementById('uiN').innerHTML = `\\( n = \\) ${t.constantDesn}`;  
-    document.getElementById('uiConstant').innerHTML = `\\( c = \\) ${t.constantDesc} \\( = 3 \\times 10^8 \\text{ m/s} \\)`;
-    document.getElementById('uiV').innerHTML = `\\( v = \\) ${t.constantDesv}`;  
-    document.getElementById('uiHint').innerHTML = t.hint;
-    document.getElementById('btnCheck').innerText = t.btnCheck;
-    document.getElementById('btnNew').innerText = t.btnNew;
-  }
+if (window.MathJax) {
+MathJax.typesetPromise();
+}
+}
 
-  function randomFloat(min, max) {
-    return Math.random() * (max - min) + min;
-  }
+function updateUIText() {
+const t = textData[currentLang];
+document.getElementById('btnLang').innerText = t.btnLangText;
+document.getElementById('uiTitle').innerText = t.title;
+document.getElementById('uiN').innerHTML = `\\( n = \\) ${t.constantDesn}`;  
+document.getElementById('uiConstant').innerHTML = `\\( c = \\) ${t.constantDesc} \\( = 3 \\times 10^8 \\text{ m/s} \\)`;
+document.getElementById('uiV').innerHTML = `\\( v = \\) ${t.constantDesv}`;  
+document.getElementById('uiHint').innerHTML = t.hint;
+document.getElementById('btnCheck').innerText = t.btnCheck;
+document.getElementById('btnNew').innerText = t.btnNew;
+}
 
-  function generateQuestion() {
-    isAnswered = false;
-    document.getElementById('userAns').value = '';
-    document.getElementById('result').innerHTML = '';
-    document.getElementById('solutionContainer').innerHTML = '';  
-    document.getElementById('solutionContainer').style.display = 'none'; 
-    document.getElementById('btnCheck').style.display = 'block'; 
-    document.getElementById('userAns').disabled = false;
+function randomFloat(min, max) {
+return Math.random() * (max - min) + min;
+}
 
-    const n_raw = randomFloat(1.3, 2.5);
-    const n = parseFloat(n_raw.toFixed(2));
-    const c = 3; 
-    const v = c / n;
-    
-    const type = Math.random() > 0.5 ? 0 : 1;
+function generateQuestion() {
+isAnswered = false;
+document.getElementById('userAns').value = '';
+document.getElementById('result').innerHTML = '';
+document.getElementById('solutionContainer').innerHTML = '';  
+document.getElementById('solutionContainer').style.display = 'none'; 
+document.getElementById('btnCheck').style.display = 'block'; 
+document.getElementById('userAns').disabled = false;
 
-    currentQ = {
-      type: type, 
-      val_n: n,
-      val_v: v,
-      ans: (type === 0) ? n : v
-    };
+const n_raw = randomFloat(1.3, 2.5);
+const n = parseFloat(n_raw.toFixed(2));
+const c = 3; 
+const v = c / n;
 
-    renderQuestionText();
-  }
+const type = Math.random() > 0.5 ? 0 : 1;
 
-  function renderQuestionText() {
-    const t = textData[currentLang];
-    let qHtml = "";
-    let unitHtml = "";
+currentQ = {
+type: type, 
+val_n: n,
+val_v: v,
+ans: (type === 0) ? n : v
+};
 
-    if (currentQ.type === 0) { // Find n
-      qHtml = t.qFindN.replace('{v}', formatNum(currentQ.val_v));
-      unitHtml = ""; 
-    } else { // Find v
-      qHtml = t.qFindV.replace('{n}', formatNum(currentQ.val_n));
-      unitHtml = t.unitSpeed;
-    }
+renderQuestionText();
+}
 
-    document.getElementById('questionArea').innerHTML = qHtml;
-    document.getElementById('unitLabel').innerHTML = unitHtml;
-  }
+function renderQuestionText() {
+const t = textData[currentLang];
+let qHtml = "";
+let unitHtml = "";
 
-  function checkAnswer() {
-    const userVal = parseFloat(document.getElementById('userAns').value);
-    if (isNaN(userVal)) return; 
+if (currentQ.type === 0) { // Find n
+qHtml = t.qFindN.replace('{v}', formatNum(currentQ.val_v));
+unitHtml = ""; 
+} else { // Find v
+qHtml = t.qFindV.replace('{n}', formatNum(currentQ.val_n));
+unitHtml = t.unitSpeed;
+}
 
-    const margin = 0.05;
-    const diff = Math.abs(userVal - currentQ.ans);
-    
-    isAnswered = true; 
-    lastResultCorrect = (diff <= margin);
-    
-    renderResult(lastResultCorrect);
-  }
+document.getElementById('questionArea').innerHTML = qHtml;
+document.getElementById('unitLabel').innerHTML = unitHtml;
+}
 
-  function renderResult(isCorrect) {
-    const t = textData[currentLang];
-    const finalAnsFormatted = formatNum(currentQ.ans);
-    const resultDiv = document.getElementById('result');
-    const solDiv = document.getElementById('solutionContainer'); 
+function checkAnswer() {
+const userVal = parseFloat(document.getElementById('userAns').value);
+if (isNaN(userVal)) return; 
 
-    if (isCorrect) {
-      resultDiv.innerHTML = `<span class="correct">${t.correct}</span> ${t.exactAns} ${finalAnsFormatted}.`;
-      solDiv.style.display = 'none'; 
-      
-      document.getElementById('btnCheck').style.display = 'none'; 
-      document.getElementById('userAns').disabled = true;
-    } else {
-      let stepsLaTeX = "";
-      
-      if(currentQ.type === 0) {
-        // Find n
-        const vVal = formatNum(currentQ.val_v);
-        stepsLaTeX = `
-          \\[
-          \\begin{align*} 
-          n &= \\frac{c}{v} \\\\
-          n &= \\frac{3 \\times 10^8}{${vVal} \\times 10^8} \\\\
-          n &= \\mathbf{${finalAnsFormatted}}
-          \\end{align*}
-          \\]
-        `;
-      } else {
-        // Find v
-        const nVal = formatNum(currentQ.val_n);
-        stepsLaTeX = `
-          \\[
-          \\begin{align*} 
-          n &= \\frac{c}{v} \\\\
-          ${nVal} &= \\frac{3 \\times 10^8}{v} \\\\
-          v &= \\frac{3 \\times 10^8}{${nVal}} \\\\
-          v &= \\mathbf{${finalAnsFormatted} \\times 10^8 \\text{ m/s}}
-          \\end{align*}
-          \\]
-        `;
-      }
-      
-      resultDiv.innerHTML = `<span class="incorrect">${t.incorrect}</span>`;
-      solDiv.innerHTML = `<strong>${t.solution}</strong><br> ${stepsLaTeX}`;
-      solDiv.style.display = 'block'; 
-    }
-    
-    if (window.MathJax) {
-      MathJax.typesetPromise([resultDiv, solDiv]);
-    }
-  }
+const margin = 0.05;
+const diff = Math.abs(userVal - currentQ.ans);
 
-  // Initialize
-  generateQuestion();
-  updateUIText();
+isAnswered = true; 
+lastResultCorrect = (diff <= margin);
+
+renderResult(lastResultCorrect);
+}
+
+function renderResult(isCorrect) {
+const t = textData[currentLang];
+const finalAnsFormatted = formatNum(currentQ.ans);
+const resultDiv = document.getElementById('result');
+const solDiv = document.getElementById('solutionContainer'); 
+
+if (isCorrect) {
+resultDiv.innerHTML = `<span class="correct">${t.correct}</span> ${t.exactAns} ${finalAnsFormatted}.`;
+solDiv.style.display = 'none'; 
+
+document.getElementById('btnCheck').style.display = 'none'; 
+document.getElementById('userAns').disabled = true;
+} else {
+let stepsLaTeX = "";
+
+if(currentQ.type === 0) {
+// Find n
+const vVal = formatNum(currentQ.val_v);
+stepsLaTeX = `
+         \\[
+         \\begin{align*} 
+         n &= \\frac{c}{v} \\\\
+         n &= \\frac{3 \\times 10^8}{${vVal} \\times 10^8} \\\\
+         n &= \\mathbf{${finalAnsFormatted}}
+         \\end{align*}
+         \\]
+       `;
+} else {
+// Find v
+const nVal = formatNum(currentQ.val_n);
+stepsLaTeX = `
+         \\[
+         \\begin{align*} 
+         n &= \\frac{c}{v} \\\\
+         ${nVal} &= \\frac{3 \\times 10^8}{v} \\\\
+         v &= \\frac{3 \\times 10^8}{${nVal}} \\\\
+         v &= \\mathbf{${finalAnsFormatted} \\times 10^8 \\text{ m/s}}
+         \\end{align*}
+         \\]
+       `;
+}
+
+resultDiv.innerHTML = `<span class="incorrect">${t.incorrect}</span>`;
+solDiv.innerHTML = `<strong>${t.solution}</strong><br> ${stepsLaTeX}`;
+solDiv.style.display = 'block'; 
+}
+
+if (window.MathJax) {
+MathJax.typesetPromise([resultDiv, solDiv]);
+}
+}
+
+// Initialize
+generateQuestion();
+updateUIText();
 </script>
 
 </body>
